@@ -1,0 +1,34 @@
+#!/usr/bin/perl
+use strict;
+use FindBin;
+use lib $FindBin::Bin;
+use HierarchyToolbox;
+
+my $infile  = shift @ARGV or die "usage: $0 <input.txt> [<output_hierarchy.xml>]\n";
+my $outfile = shift @ARGV || '-';
+my $Tree = alephxtree->new(outfile => $outfile);
+open(IN, "<$infile") or die "cannot read $infile: $!";
+$_ = <IN>;  # zap header
+while ( <IN> ) {
+    chomp;
+    my($recno,$uplink,$sort,$data)=split/\t/;
+    $recno = sprintf($ALEPH_RECNO_FORMAT,$recno);
+    $uplink = $uplink ? sprintf($ALEPH_RECNO_FORMAT,$uplink) : undef;
+    # default data routine: 351 ISAD 'level of description' information
+    if ( $data ) {
+        $data = escape_xml($data);
+        $data = qq|<level_of_description>$data</level_of_description>|;
+    }
+    # -- for top level documents (= no uplink), add title to data
+    unless ( $uplink ) {
+        my $title = $sort;
+        $title =~ s/<</[/g;
+        $title =~ s/>>/]/g;
+        $title = escape_xml($title);
+        $data .= qq|<title>$title</title>|;
+    }
+    $sort=HierarchyToolbox::make_sort_string($sort);
+    $Tree->add($recno,$uplink,$sort,$data);
+}
+close IN;
+$Tree->serialize;

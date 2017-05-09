@@ -1,0 +1,31 @@
+#!/usr/bin/perl
+use strict;
+use FindBin;
+use lib $FindBin::Bin;
+use HierarchyToolbox;
+
+my $infile  = shift @ARGV or die "usage: $0 <input.txt> [<output_hierarchy.xml>]\n";
+my $outfile = shift @ARGV || '-';
+my $Tree = alephxtree->new(outfile => $outfile);
+open(IN, "<$infile") or die "cannot read $infile: $!";
+$_ = <IN>;  # zap header
+while ( <IN> ) {
+    chomp;
+    my($recno,$uplink,$sort,$level,$number,$title,$author)=split/\t/;
+    $recno = sprintf($ALEPH_RECNO_FORMAT,$recno);
+    $uplink = $uplink ? sprintf($ALEPH_RECNO_FORMAT,$uplink) : undef;
+    $level = escape_xml($level);
+    $number = escape_xml($number);
+    $title =~ s/<</[/g;
+    $title =~ s/>>/]/g;
+    $title = escape_xml($title);
+    $author = escape_xml($author);
+    my $data = "<level_of_description>$level</level_of_description>"
+        ."<numbering>$number</numbering>"
+        ."<title>$title</title>"
+        ."<author>$author</author>";
+    $sort=HierarchyToolbox::make_sort_string($sort);
+    $Tree->add($recno,$uplink,$sort,$data);
+}
+close IN;
+$Tree->serialize;

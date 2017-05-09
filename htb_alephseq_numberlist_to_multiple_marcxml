@@ -1,0 +1,61 @@
+#!/usr/bin/perl
+use strict;
+use FindBin;
+use lib $FindBin::Bin;
+use HierarchyToolbox;
+use Getopt::Long;
+use File::Basename;
+
+sub usage {
+    my $PROG=File::Basename::basename($0);
+    print STDERR<<EOD;
+$PROG - 15.02.2008 (c) andres.vonarx\@unibas.ch
+
+usage:  $PROG [options]
+
+Reads an Aleph sequential file and a numberlist (a text file consisting
+of one Aleph system number per line). Converts all records listed in
+numberlist into single MARC21 XML files, named "marc<recno>.xml".
+
+options:
+ --help                 show this text and quit
+ --version              show version information and quit
+ --alephseq=filename    Aleph sequential input file (mandatory)
+ --numberlist=filename  textfile with lines of Aleph system numbers (mandatory)
+ --outputdir=directory  directory, where XML output files will be stored (mandatory)
+ --noquiet              print out filenames of generated files (default: off)
+
+example:
+ \$ $PROG --alephseq=full.seq --numberlist=select.txt --outputdir=temp/marc/files
+
+EOD
+    exit;
+}
+
+my($opt,$outdir,$quiet);
+my $infile = '';
+my $numberlist = '';
+my $quiet=1;
+
+GetOptions(
+    'help'          => \$opt->{help},
+    'version'       => \$opt->{help},
+    'alephseq=s'    => \$infile,
+    'numberlist=s'  => \$numberlist,
+    'outputdir=s'   => \$outdir,
+    'quiet!'        => \$quiet,
+    ) or usage;
+
+($opt->{help}) and usage;
+($infile)  or usage;
+($numberlist) or usage;
+(-d $outdir) or usage;
+
+my $verbose = ( $quiet ) ? 0 : 1;
+
+convert_alephseq_to_multiple_marcxml(
+    infile => $infile,
+    outfile_format => "$outdir/marc%s.xml",
+    numberlist => $numberlist,
+    verbose => $verbose,
+    );

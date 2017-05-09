@@ -1,0 +1,55 @@
+#!/usr/bin/perl
+use strict;
+use FindBin;
+use lib $FindBin::Bin;
+use HierarchyToolbox;
+use Getopt::Long;
+use File::Basename;
+
+sub usage {
+    my $PROG=File::Basename::basename($0);
+    print STDERR<<EOD;
+$PROG - 15.02.2008 (c) andres.vonarx\@unibas.ch
+
+usage:  $PROG [options]
+
+Reads an Aleph sequential file and a numberlist (a text file consisting
+of one Aleph system number per line). Converts all records listed in
+numberlist into MARC21 XML.
+
+options:
+ --help                 show this text and quit
+ --version              show version information and quit
+ --alephseq=filename    Aleph sequential input file (mandatory)
+ --numberlist=filename  textfile with lines of Aleph system numbers (mandatory)
+ --output=filename      XML output file (default: stdout)
+
+example:
+ \$ $PROG --aleph=full.seq --numberlist=select.txt --output=select.xml
+
+EOD
+    exit;
+}
+
+my $opt;
+my $infile = '';
+my $numberlist = '';
+my $outfile = '-';
+
+GetOptions(
+    'help'          => \$opt->{help},
+    'version'       => \$opt->{help},
+    'alephseq=s'    => \$infile,
+    'numberlist=s'  => \$numberlist,
+    'output=s'      => \$outfile,
+    ) or usage;
+
+($opt->{help}) and usage;
+($infile)  or usage;
+($numberlist) or usage;
+
+convert_alephseq_to_marcxml(
+    infile => $infile,
+    outfile => $outfile,
+    numberlist => $numberlist
+    );

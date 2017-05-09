@@ -1,0 +1,9 @@
+#!/usr/bin/perl
+use strict;
+use FindBin;
+use lib $FindBin::Bin;
+use HierarchyToolbox;
+
+my $infile  = shift @ARGV or die "usage: $0 <input_aleph.seq> [<output_marc.xml>]\n";
+my $outfile = shift @ARGV || '-';
+convert_alephseq_to_marcxml( infile => $infile, outfile => $outfile);

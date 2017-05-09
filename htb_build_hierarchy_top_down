@@ -1,0 +1,82 @@
+#!/usr/bin/perl
+use strict;
+use FindBin;
+use lib $FindBin::Bin;
+use HierarchyToolbox;
+use Getopt::Long;
+
+sub usage {
+    print STDERR<<EOD;
+usage: $0 <options>
+
+options:
+--toplist=filename  CSV file with top level sysno
+--list490=filename  CSV file with recno/uplink_recno/sortform of children
+--outfile=filename  name of hierarchy XML file (default: stdout)
+--sortkey           add <sortkey> to <data>
+--help              show this text and exit
+
+EOD
+    exit;
+}
+
+my($toplist,$list490,$outfile,$add_sortkey,$help);
+GetOptions(
+    "toplist=s" => \$toplist,
+    "list490=s" => \$list490,
+    "outfile=s" => \$outfile,
+    "sortkey"   => \$add_sortkey,
+    "help"      => \$help,
+) or usage;
+
+( $help ) and usage;
+( $toplist ) or usage;
+( $list490 ) or usage;
+$outfile ||= '-';
+
+my $Tree = alephxtree->new(mode => 'top-down', outfile => $outfile);
+
+# -- create lookup-hash for all potential 490 children
+my $Lookup;
+open(LIST,"<$list490") or die "cannot read $list490: $!";
+$_ = <LIST>; # skip header
+while ( <LIST> ) {
+    chomp;
+    my($current,$uplink,$sort)=split /\t/;
+    $Lookup->{$uplink}->{$current} = $sort;
+}
+close LIST;
+
+# -- follow the top elements and create top-down-list
+open(TOP,"<$toplist") or die "cannot read $toplist: $!";
+while ( <TOP> ) {
+    chomp;
+    my($sysno,$sort,$data) = split /\t/;
+    $sort = escape_xml($sort);
+    $sort = HierarchyToolbox::make_sort_string($sort);
+    if ( $add_sortkey ) {
+        $data = "<sortkey>$sort</sortkey>" .$data;
+    }
+    $Tree->add($sysno,0,$sort,$data);
+    add_children($sysno);
+}
+close TOP;
+
+sub add_children {
+    my($parent)=shift;
+    if ( defined $Lookup->{$parent} ) {
+        my $ref = $Lookup->{$parent};
+        foreach my $child ( keys %$ref ) {
+            my $sort = HierarchyToolbox::make_sort_string($ref->{$child});
+            my $data = $ref->{$child};
+            if ( $add_sortkey ) {
+                $data = "<sortkey>$sort</sortkey>" .$data;
+            }
+            $Tree->add($child,$parent,$sort,$data);
+            add_children($child);
+        }
+    }
+}
+
+close TOP;
+$Tree->serialize;

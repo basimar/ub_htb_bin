@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta content="text/html; charset=utf-8" http-equiv="content-type"><style type="text/css">
+body {
+font-family:sans-serif;
+font-size:0.8em;
+}
+pre {
+font-size:1.4em;
+border: 1px solid #008;
+padding: 2mm;
+background-color:#f0f0ff;
+}
+</style><title>Hierarchie-Toolbox 2010</title></head>
+<body><h1><a name="top"></a>Hierarchie-Toolbox - Version 2 (2010)</h1>Zweck
+der&nbsp;Toolbox ist es, verknüpfte
+bibliographische Daten aus dem Bibliothekssystem Aleph zu extrahieren,
+ihre hierarchische Struktur ausserhalb des Bibliothekssystems
+nachzubauen,&nbsp;vorzugsweise im Format&nbsp;XML, und daraus
+eigenständige HTML-Seiten zu generieren. <br>Siehe dazu auch die
+Projektdokumentation zur Version 1 (2006): &nbsp;<a href="http://www.ub.unibas.ch/ibb/api/toolkit-hierarchie/">http://www.ub.unibas.ch/ibb/api/toolkit-hierarchie/</a><br><br><b>Dokumentation</b><br>1.
+<a href="#a1">Datenselektion und -export in Aleph</a><br>2.
+<a href="#a2">Verwendete Standardsoftware</a><br>&nbsp;&nbsp;&nbsp;
+2.1
+&nbsp;<a href="#a21">Software
+für&nbsp;XML/XSL-Transformation</a><br>&nbsp;&nbsp;&nbsp;
+2.2 &nbsp;<a href="#a22">Perlmodule für XML und MARC</a><br>&nbsp;&nbsp;&nbsp;
+2.3 &nbsp;<a href="#a23">Javascript Treemenu</a><br>3&nbsp;
+<a href="#a3">Die Tools der Hierarchie-Toolbox</a><br>4. <a href="#a4">Link zurück in die&nbsp;Aleph-Session</a><br><br>
+<hr size="2" width="100%"><h2><a name="a1"></a>1
+&nbsp;Datenselektion und -export in Aleph</h2>Idealerweise
+kann der
+Gesamtbestand einer Hierarchie aus Aleph extrahiert und dann
+weiterbearbeitet werden.<br>
+<h3>1.1 &nbsp;Für einzelne Aleph-Aufnamen: Aleph X-Service</h3>
+<b>find-doc</b>: (liefert OAI-XML)<b><br></b><a href="http://aleph.unibas.ch/X?op=find-doc&amp;doc_number=005000000&amp;base=dsv01">http://aleph.unibas.ch/X?op=find-doc&amp;doc_number=005000000&amp;base=dsv01</a><br>
+<br>-&nbsp;enthält bibliographische Daten und die Expands,
+die in <a href="http://aleph.unibas.ch/dirlist/u/dsv01/tab/tab_expand">tab_expand</a>
+im Abschnitt WWW-X definiert sind.<br>
+- kann fehlerhaftes XML liefern (noch nicht verfiziert für Aleph V.20)<br>
+<br><b>ill-get-doc</b>: (liefert MARC21 XML)<br>
+<a href="http://aleph.unibas.ch/X?op=ill-get-doc&amp;doc_number=005000000&amp;library=dsv01">http://aleph.unibas.ch/X?op=ill-get-doc&amp;doc_number=005000000&amp;library=dsv01</a><br>
+<br>- liefert nur bibliographische Daten, ohne Expands und ohne
+Systemnummer (Feld SYS oder 001)<br>
+- das XML ist u.W. korrekt<br>
+<br>[<a href="#top">top</a>]<br><h3>1.2 &nbsp;Für kleinere Datenmengen
+(&lt; 5000) : Aleph X-Services</h3>Das Skript htb_alephx_store_set (auf den UB-NX-Servern installiert als "alephx_store_set") benutzt die Aleph X-Services:
+<pre>$ <b>alephx_store_set</b><br><br>usage: alephx_store_set [options]<br><br>Retrieve bibliographic records thru Aleph X-Services and store them into<br>a file. The output format is non-standard XML. It can be converted into<br>standard MARC21 XML using alephxml_marcxml.xsl.<br><br>options:<br> --help show this text and quit<br> --version show version information and quit<br> --ccl="query" CCL query (mandatory)<br> --file=filename output file (mandatory)<br> --host=hostname Aleph server (default: aleph.unibas.ch)<br> --alephlib=library Aleph library (default: dsv01)<br> --quiet do not output any messages<br><br>example:<br> $ alephx_store_set --ccl='wrd=(zen internet) and wsl=A100' --file=out.xml<br> $ saxon out.xml alephxml_marcxml.xsl &gt; marc.xml<br><br></pre>-
+benutzt die Aleph-X-Services "find" und "present"<br>
+- langsam; liefert Daten in Tranchen von 99 Records<br>
+- enthält bibliographische Daten und die Expands, die in <a href="http://aleph.unibas.ch/dirlist/u/dsv01/tab/tab_expand">tab_expand</a>
+im Abschnitt WWW-X definiert sind.<br>
+- das Skript korrigiert fehlerhaftes XML<br>
+- das Ausgbabeformat ist ein proprietäres OAI-XML, es kann aber per
+XML/XSL in MARC21 konvertiert werden<br>
+- der Record erhält immer ein Feld 001 mit Systemnummer<br>
+<br>[<a href="aaa_liesmi_htb_2010.html#top">top</a>]<br><h3>1.3&nbsp; Für grössere Datenmengen
+und präzise Steuerung
+: Aleph GUI Services</h3>
+1. Schritt: Datensätze suchen / Datensätze mit CCL suchen (<b>p-ret-03</b>)<br>
+2. Schritt: Datensätze suchen / Datensätze exportieren (<b>p-print-03</b>)<br>
+<br>Expands können nach Belieben eingeschaltet werden. Die
+Staff-Berechtigung für die Services der benutzten Library muss
+vorhanden sein.<br>
+<br><b>Ausgabeformat Aleph Sequential</b>:<br>-&nbsp;
+Vorteil: kompakt<br>
+- kann mit <b>htb_alephseq_to_marcxml</b> in MARC21 XML
+konvertiert werden<br>
+<br><b>Ausgabeformat MARC XML</b><br>
+- kann XML-Fehler enthalten. Diese können mit <b>fix_aleph_xml_charset.pl</b>
+korrigiert werden.<br>
+<br>Dieser Export kann auch automatisiert werden (Einstellen in
+die Job List von Aleph).<br><br>
+[<a href="aaa_liesmi_htb_2010.html#top">top</a>]<br><h3>1.4&nbsp; Für exakte Kontrolle über Neuzugänge
+und Mutationen: OAI/PMH</h3>Auf Seite des Aleph Servers muss ein
+entsprechender Set "publiziert" werden. Dieser kann mit dem OAI/PHM
+Protokoll von defnierten Stationen aus geharvestet werden (die
+Zugangskontrolle wird in der Apache Konfiguration von Aleph
+kontrolliert). <br>Beispiele:<br>- Publizieren von dsv01
+für&nbsp;swissbib<br>- Export der&nbsp;Basler E-Dissen
+an die&nbsp;SNB<br>- Re-Export der&nbsp;bearbeitete Daten
+aus der
+Forschungsdatenbank Uni Basel an den Dokumentenserver (geplant)<br><br>Vorteil:
+exakte Kontrolle über Neuzugänge und Mutationen.<br>Nachteil:
+grosser Platzbedarf und Aufwand auf Seite Alephserver<br><br>[<a href="aaa_liesmi_htb_2010.html#top">top</a>]<br><h3>1.5&nbsp;
+Für grössere Datenmengen und präzise Steuerung ausserhalb von Aleph</h3>Die
+Datei dsv05.seq wird täglich gedumpt. &nbsp;Daraus - aber auch aus
+jeder anderen Datei im Format "Aleph Sequential" - können Teilmengen
+extrahiert werden mit dem Tool&nbsp; <b>filter_alephseq.pl</b>.<br><pre>$ <b>perl filter_alephseq.pl</b><br><br>filter_alephseq.pl - 26.07.2010 (c) andres.vonarx@unibas.ch<br><br>usage: perl filter_alephseq.pl [options]<br><br>Reads in an Aleph sequential file and outputs all records where the content<br>of a certain MARC field and subfield matches a given regular expression.<br><br>options:<br> --help show this text and quit<br> --version show version information and quit<br> --input=filename Aleph sequential input file (default: stdin)<br> --output=filename Aleph sequential output file (default: stdout)<br> --marctag=string where to look for: MARC field[+indicator] [subfield]<br> --regex=regex what to look for (regular expression)<br> --[no]ignorecase ignore case in pattern matching (default:ignorecase)<br><br>example:<br> $ perl filter_alephseq.pl --in=dsv05.seq --out=gosteli.seq --marc='852 b' --regex='Gosteli' --noignorecase<br><br></pre>Beispiel: Gosteli-Archiv<br>
+<br>[<a href="aaa_liesmi_htb_2010.html#top">top</a>]<br><hr size="2" width="100%"><h2><a name="a2"></a>2&nbsp; Verwendete Standardsoftware</h2><h3><a name="a21"></a>2.1
+&nbsp;Software für&nbsp;XML/XSL-Transformation</h3>Die
+ursprüngliche Idee der Toolbox war es, sowohl die bibliographische
+Daten wie die Hierarchie als XML-Dateien vorzuhalten und alle
+Bearbeitung über XML/XSL-Transformationen abzuwickeln. <br>-
+Vorteil: standardisiertes Datenformat.<br>- Nachteil: wenig
+performant, nicht geeignet für grosse Datenmengen.<br><br><b><br>Saxon
+6.x</b><br>-
+Installiert:&nbsp;NX-Server,&nbsp;Aleph-Server<br>-
+Vorteil: auf allen Plattformen lauffähig<br>-
+Nachteil:&nbsp;Java-basiert, langsam, produziert bald
+OutOfMemoryError: Java heap space<br><pre>$ <b>saxon</b><br><br>SAXON 6.5.5 from Michael Kay<br>Usage: java com.icl.saxon.StyleSheet [options] source-doc style-doc {param=value}...<br>Options:<br> -a Use xml-stylesheet PI, not style-doc argument<br> -ds Use standard tree data structure<br> -dt Use tinytree data structure (default)<br> -o filename Send output to named file or directory<br> -m classname Use specified Emitter class for xsl:message output<br> -r classname Use specified URIResolver class<br> -t Display version and timing information<br> -T Set standard TraceListener<br> -TL classname Set a specific TraceListener<br> -u Names are URLs not filenames<br> -w0 Recover silently from recoverable errors<br> -w1 Report recoverable errors and continue (default)<br> -w2 Treat recoverable errors as fatal<br> -x classname Use specified SAX parser for source file<br> -y classname Use specified SAX parser for stylesheet<br> -? Display this message<br></pre><b><br>Saxon
+7.x</b><br>- Installiert: Windows Aleph GUI Clients<br>-
+Vorteil: auf allen Plattformen lauffähig<br>-
+Nachteil:&nbsp;Java-basiert, langsam, produziert bald
+OutOfMemoryError: Java heap space<br><pre>P:\aleph20\AL500\Alephcom\bin&gt;<b>java -jar saxon7.jar</b><br><br>SAXON 7.7 from Michael Kay<br>Usage: java net.sf.saxon.Transform [options] source-doc style-doc {param=value}<br>...<br>Options:<br> -a Use xml-stylesheet PI, not style-doc argument<br> -c Indicates that style-doc is a compiled stylesheet<br> -ds Use standard tree data structure<br> -dt Use tinytree data structure (default)<br> -im modename Start transformation in specified mode<br> -o filename Send output to named file or directory<br> -m classname Use specified Emitter class for xsl:message output<br> -r classname Use specified URIResolver class<br> -t Display version and timing information<br> -T Set standard TraceListener<br> -TJ Trace calls to external Java functions<br> -TL classname Set a specific TraceListener<br> -u Names are URLs not filenames<br> -v Validate source document<br> -w0 Recover silently from recoverable errors<br> -w1 Report recoverable errors and continue (default)<br> -w2 Treat recoverable errors as fatal<br> -x classname Use specified SAX parser for source file<br> -y classname Use specified SAX parser for stylesheet<br> -? Display this message<br> param=value Set stylesheet parameter<br> !option=value Set serialization option<br><br></pre><b><br>Saxon
+8.x</b><br>- Installiert: Windows Aleph GUI Clients<br>-
+Vorteil: auf allen Plattformen lauffähig<br>-
+Nachteil:&nbsp;Java-basiert, langsam, produziert bald
+OutOfMemoryError: Java heap space<pre><br>P:\aleph20\AL500\Alephcom\bin&gt;<b>java -jar saxon8.jar</b><br><br>Saxon 8.7J from Saxonica<br>Usage: java net.sf.saxon.Transform [options] source-doc style-doc {param=value}.<br>..<br>Options:<br> -a Use xml-stylesheet PI, not style-doc argument<br> -c Indicates that style-doc is a compiled stylesheet<br> -cr classname Use specified collection URI resolver class<br> -ds Use linked tree data structure<br> -dt Use tiny tree data structure (default)<br> -im modename Start transformation in specified mode<br> -it template Start transformation by calling named template<br> -l Retain line numbers in source document tree<br> -o filename Send output to named file or directory<br> -m classname Use specified Emitter class for xsl:message output<br> -novw Suppress warning when running with an XSLT 1.0 stylesheet<br> -r classname Use specified URIResolver class<br> -p Recognize Saxon file extensions and query parameters<br> -sa Schema-aware transformation<br> -sall Strip all whitespace text nodes<br> -signorable Strip ignorable whitespace text nodes (default)<br> -snone Strip no whitespace text nodes<br> -t Display version and timing information<br> -T Set standard TraceListener<br> -TJ Trace calls to external Java functions<br> -TL classname Set a specific TraceListener<br> -u Names are URLs not filenames<br> -v Validate source documents using DTD<br> -val Validate source documents using schema<br> -vlax Lax validation of source documents using schema<br> -vw Treat validation errors on result document as warnings<br> -w0 Recover silently from recoverable errors<br> -w1 Report recoverable errors and continue (default)<br> -w2 Treat recoverable errors as fatal<br> -x classname Use specified SAX parser for source file<br> -y classname Use specified SAX parser for stylesheet<br> -1.1 Allow XML 1.1 documents<br> -? Display this message<br> param=value Set stylesheet string parameter<br> +param=file Set stylesheet document parameter<br> !option=value Set serialization option<br><br>P:\aleph20\AL500\Alephcom\bin&gt;</pre><br><b>Saxon
+9.x</b><br>-
+Installiert:&nbsp;NX-Server,&nbsp;Aleph-Server<br>-
+Vorteil: auf allen Plattformen lauffähig<br>-
+Nachteil:&nbsp;Java-basiert, langsam, produziert bald
+OutOfMemoryError: Java heap space; Probleme beim Zugriff auf remote DTD<pre>$ <b>saxon9</b><br><br>Saxon 9.0.0.4J from Saxonica<br>Usage: see <a href="http://www.saxonica.com/documentation/using-xsl/commandline.html">http://www.saxonica.com/documentation/using-xsl/commandline.html</a><br>Options:<br> -a Use xml-stylesheet PI, not style-doc argument<br> -c:filename Use compiled stylesheet from file<br> -cr:classname Use collection URI resolver class<br> -dtd:on|off Validate using DTD<br> -expand:on|off Expand defaults defined in schema/DTD<br> -explain[:filename] Display compiled expression tree<br> -ext:on|off Allow|Disallow external Java functions<br> -im:modename Initial mode<br> -it:template Initial template<br> -l:on|off Line numbering for source document<br> -m:classname Use message receiver class<br> -o:filename Output file or directory<br> -or:classname Use OutputURIResolver class<br> -outval:recover|fatal Handling of validation errors on result document<br> -p:on|off Recognize URI query parameters<br> -r:classname Use URIResolver class<br> -repeat:N Repeat N times for performance measurement<br> -s:filename Initial source document<br> -sa Schema-aware transformation<br> -strip:all|none|ignorable Strip whitespace text nodes<br> -t Display version and timing information<br> -T[:classname] Use TraceListener class<br> -TJ Trace calls to external Java functions<br> -tree:tiny|linked Select tree model<br> -u Names are URLs not filenames<br> -val:strict|lax Validate using schema<br> -versionmsg:on|off Warn when using XSLT 1.0 stylesheet<br> -warnings:silent|recover|fatal Handling of recoverable errors<br> -x:classname Use specified SAX parser for source file<br> -xi:on|off Expand XInclude on all documents<br> -xmlversion:1.0|1.1 Version of XML to be handled<br> -xsl:filename Stylesheet file<br> -y:classname Use specified SAX parser for stylesheet<br> -? Display this message<br> param=value Set stylesheet string parameter<br> +param=filename Set stylesheet document parameter<br> !option=value Set serialization option<br><br></pre><b><br>xsltproc</b><br>-
+Installiert:&nbsp;NX-Server<br>- Vorteil: kompiliertes
+Programm, schnell<br>- Nachteil: [? - noch wenig Erfahrung]<pre>$ <b>xsltproc</b><br><br>Usage: xsltproc [options] stylesheet file [file ...]<br> Options:<br> --version or -V: show the version of libxml and libxslt used<br> --verbose or -v: show logs of what's happening<br> --output file or -o file: save to a given file<br> --timing: display the time used<br> --repeat: run the transformation 20 times<br> --debug: dump the tree of the result instead<br> --dumpextensions: dump the registered extension elements and functions to stdout<br> --novalid skip the Dtd loading phase<br> --nodtdattr do not default attributes from the DTD<br> --noout: do not dump the result<br> --maxdepth val : increase the maximum depth<br> --maxparserdepth val : increase the maximum parser depth<br> --html: the input document is(are) an HTML file(s)<br> --encoding: the input document character encoding<br> --param name value : pass a (parameter,value) pair<br> value is an UTF8 XPath expression.<br> string values must be quoted like "'string'"<br> or use stringparam to avoid it<br> --stringparam name value : pass a (parameter, UTF8 string value) pair<br> --path 'paths': provide a set of paths for resources<br> --nonet : refuse to fetch DTDs or entities over network<br> --nowrite : refuse to write to any file or resource<br> --nomkdir : refuse to create directories<br> --writesubtree path : allow file write only with the path subtree<br> --catalogs : use SGML catalogs from $SGML_CATALOG_FILES<br> otherwise XML Catalogs starting from<br> file:///etc/xml/catalog are activated by default<br> --xinclude : do XInclude processing on document input<br> --xincludestyle : do XInclude processing on stylesheets<br> --load-trace : print trace of all external entites loaded<br> --profile or --norman : dump profiling informations<br><br>Project libxslt home page: <a href="http://xmlsoft.org/XSLT/">http://xmlsoft.org/XSLT/</a><br>To report bugs and get help: http://xmlsoft.org/XSLT/bugs.html<br><br></pre><br><b>oraxsl
+: Oracle XML/XSL Parser</b><br>- Installiert: Aleph-Server<br>-
+Vorteil: gedacht zur Verwendung innerhalb von PL/SQL<br>&nbsp;
+Dokumentation: <a href="http://download.oracle.com/docs/cd/B10501_01/appdev.920/a96621/adx20ppl.htm">http://download.oracle.com/docs/cd/B10501_01/appdev.920/a96621/adx20ppl.htm</a><br>-
+Nachteil:&nbsp;Java-basiert, langsam, produziert bald
+OutOfMemoryError: Java heap space;<br>&nbsp; Das Skript
+oraxsl funktioniert nicht auf der Kommandozeile;<br><pre>prod 20(1) aleph/a20_1/alephm&gt; <b>java -classpath /exlibris/app/oracle/product/11/lib/xmlparserv2.jar oracle.xml.parser.v2.oraxsl</b><br><br>usage: oraxsl options* source? stylesheet? result?<br> -w Show warnings<br> -e &lt;error log&gt; A file to write errors to<br> -l &lt;xml file list&gt; List of files to transform<br> -d &lt;directory&gt; Directory with files to transform<br> -x &lt;source extension&gt; Extensions to exclude<br> -i &lt;source extension&gt; Extensions to include<br> -s &lt;stylesheet&gt; Stylesheet to use<br> -r &lt;result extension&gt; Extension to use for results<br> -o &lt;result directory&gt; Directory to place results<br> -p &lt;param list&gt; List of Params<br> -t &lt;# of threads&gt; Number of threads to use<br> -v Verbose mode<br> -debug Debug mode<br> -m &lt;version #&gt; XSLT Version, 1 or 2<br>Please refer to the readme file for more information on the above options<br></pre>Das
+Produkt ist ganz schluddrig deployed: innerhalb der Oracle Installation
+gammeln 5 Kopien (in 4 Versionen) des jar Files&nbsp;herum:<br><pre> -rw-r--r-- 1 oracle11 dba 1238899 Mar 18 2007 ./oc4j/lib/xmlparserv2.jar<br> -rw-r--r-- 1 oracle11 dba 1436312 Sep 19 2008 ./oui/jlib/xmlparserv2.jar<br> -rw-r--r-- 1 oracle11 dba 1436312 Sep 10 2008 ./lib/xmlparserv2.jar<br> -rw-r--r-- 1 oracle11 dba 1181542 Oct 12 2008 ./ccr/lib/xmlparserv2.jar<br> -rw-r--r-- 1 oracle11 dba 1420339 Sep 10 2006 ./sqldeveloper/lib/xmlparserv2.jar<br><br> java -classpath /exlibris/app/oracle/product/11/oui/jlib/xmlparserv2.jar oracle.xml.parser.v2.oraxsl -v<br> java -classpath /exlibris/app/oracle/product/11/lib/xmlparserv2.jar oracle.xml.parser.v2.oraxsl -v<br> Release version: Oracle XML Developers Kit 11.1.0.7.0 - Production<br><br> java -classpath /exlibris/app/oracle/product/11/oc4j/lib/xmlparserv2.jar oracle.xml.parser.v2.oraxsl -v<br> Release version: Oracle XML Developers Kit 10.1.3.130 - Production<br><br> java -classpath /exlibris/app/oracle/product/11/sqldeveloper/lib/xmlparserv2.jar oracle.xml.parser.v2.oraxsl -v<br> Release version: Oracle XML Developers Kit 10.2.0.1.0 - Production<br><br> java -classpath /exlibris/app/oracle/product/11/ccr/lib/xmlparserv2.jar oracle.xml.parser.v2.oraxsl -v<br> Release version: Oracle XML Developers Kit 10.1.0.2.0A - Pre-Production<br></pre><br><b>msxsl
+3.0</b><br>- Installiert: individuelle Windows XP Maschinen
+(Download von Microsoft, Stichworte: msxml.exe,&nbsp;Microsoft Core
+XML Services (MSXML) 6.0<br>- Vorteil: kompiliert und sehr schnell<br>-
+Nachteil: nur Windows<pre>C:\&gt; <b>msxsl</b><br>Microsoft (R) XSLT Processor Version 3.0<br><br>Usage: MSXSL source stylesheet [options] [param=value...] [xmlns:prefix=uri...]<br><br>Options:<br> -? Show this message<br> -o filename Write output to named file<br> -m startMode Start the transform in this mode<br> -xw Strip non-significant whitespace from source and stylesheet<br> -xe Do not resolve external definitions during parse phase<br> -v Validate documents during parse phase<br> -t Show load and transformation timings<br> -pi Get stylesheet URL from xml-stylesheet PI in source document<br> -u version Use a specific version of MSXML: '2.6', '3.0', '4.0'<br> - Dash used as source argument loads XML from stdin<br> - Dash used as stylesheet argument loads XSL from stdin<br><br></pre><p>[<a href="aaa_liesmi_htb_2010.html#top">top</a>]</p><hr size="2" width="100%"><h3><a name="a22"></a>2.2
+&nbsp;Perlmodule für XML und MARC<br></h3><p>Oft
+ist es performanter, eine MARC-XML Datei direkt mit Perl zu bearbeiten.
+Diese Module helfen dabei:</p><h4>2.2.1 Perl Module
+XML::Simple</h4>Das Modul parst XML-Datenschnipsel&nbsp;in
+Perl Datenstrukturen. <br>Das Modul ist auf allen Plattformen
+installiert (NX-Server, Aleph-Server, Windows Active Perl auf
+\\ub-files\perl). <br>Dokumentation:<br>- Linux + Solaris:
+perldoc XML::Simple<br>-&nbsp;Windows:&nbsp;<a href="http://intranet.ub.unibas.ch/perl/site/lib/XML/Simple.html">http://intranet.ub.unibas.ch/perl/site/lib/XML/Simple.html</a><br><h4>2.2.2
+&nbsp;Perl Module MARC::Record, MARC::File, MARC::Batch</h4>
+Das Modul MARC::Batch liefert z.B. Record um
+Record eines MARC XML files in einer Perl-Datenstruktur, bei der
+einzelne Felder/Unterfelder
+leicht aus dem Record extrahiert und weiterbearbeitet werden können.<br><br>Die
+MARC:: Module sind nicht systemweit installiert. Sie können von einem
+Perlskript aber benutzt werden, wenn Perl weiss, wo es die Module
+finden kann.<br>Beispiel (für NX-Server):<br><pre>#!/usr/bin/perl<br><br>use strict;<br>use lib '/intranet/edv/bibliothekssysteme/bibtools/hierarchie_toolbox/htb';<br>use MARC::Record;<br>...<br></pre>Die
+Module sind dokumentiert bei CPAN: <a href="http://search.cpan.org/%7Emikery/MARC-Record/">http://search.cpan.org/~mikery/MARC-Record/</a><br>
+Es gibt auch ein <b>Tutorial</b>: <a href="http://search.cpan.org/%7Emikery/MARC-Record/lib/MARC/Doc/Tutorial.pod">http://search.cpan.org/~mikery/MARC-Record/lib/MARC/Doc/Tutorial.pod</a><br><br>
+Anwendungsbeispiel: das Perlskript <a href="http://alephtest.unibas.ch/dirlist/u/local/andres/spezkat/ubnachlass/enrich-hierarchy-with-marcdata.pl">enrich-hierarchy-with-marcdata.pl</a>
+für die UB-Nachlässe<br><h4>2.2.3 &nbsp;Siehe auch</h4><p><a href="http://intranet.ub.unibas.ch/edv/public/xsl/aleph_listen/AAA_LIESMI.html">Edit-Tools
+für MARC XML</a>: diverse Tools, die für die Formatierung von
+Aleph-Listen verwendet werden.</p>[<a href="aaa_liesmi_htb_2010.html#top">top</a>]<hr size="2" width="100%"><h3><a name="a23"></a>2.3
+&nbsp;JavaScript Treemenu</h3><br><b>Tigra Tree
+Menu [Pro]</b><br><blockquote>Zwei JavaScript
+Library zum einfachen Generieren ausklappbarer Hierarchiebäume in
+Dynamischen HTML.<br><br>Tigra Tree Menu ist eine Freeware-Version, die beliebig verwendet werden kann.<br> <a href="http://www.softcomplex.com/products/tigra_tree_menu_pro/">Tigra Tree Menu
+Pro</a>&nbsp;ist eine kostenpflichtige Version mit erweitertem Funktionsumfang. Die UB Basel hat eine Lizenz. <br>Sources,
+Dokumentation und Beispielcode findet sich auch bei der Toolbox.<br></blockquote>Die folgenden Tools produzieren JavaScript Code für Tigra Tree Menu:<br><b><br></b><b>tigra_tree_menu_full.xsl</b><br><blockquote>
+generiert JS&nbsp;aus einer&nbsp;Hierarchie-XML-Datei allein.<br>Beispiel:
+HAN Gosteli Archiv<br></blockquote><b>tigra_tree_menu.xsl</b><br><blockquote>
+generiert JS aus einer XML-Hierarchie-Datei und einer separaten
+MARC XML-Datei.<br>Beispiel: &nbsp;HAN REBUS Archiv<br></blockquote><b>generate_treemenu.pl</b><br><b>
+generate_treemenu_pro.pl</b><br><blockquote>generiert JS&nbsp;direkt aus einer hierarchisch strukturierten Textdatei<br>Beispiel:
+&nbsp;UB Lesesaalsignaturen, SWA Firmen und Verbandsdokumentation<br></blockquote>
+[<a href="aaa_liesmi_htb_2010.html#top">top</a>]
+<hr size="2" width="100%">
+<h2><a name="a3"></a>3
+&nbsp;Die Tools der Hierarchie-Toolbox</h2>Die Skripts sind dokumentiert im&nbsp;POD <a href="HierarchyToolbox.html">HierarchyToolbox.html</a>
+zu HierarchyToolbox.pm<br><br>Die
+ursprüngliche Idee war, dass aus den Daten selbst ein Hierarchiebaum im
+XML-Format generiert werden sollte, d.h. ohne&nbsp;Rückgriff auf die
+Aleph-interne Verknüpfungstabelle Z103. Dabei wird entweder ein gut
+selektionierter Datenbestand&nbsp;<b>bottom up</b> in einer hierarchische Ordnung gebracht, oder ausgehend von einer bekannten Zahl von Aufnahmen der obersten Stufe <b>top down</b> die verknüpften Aufnahmen aus einem Datenpool herausgesucht.<br><blockquote><b>htb_build_hierarchy_bottom_up</b><br>
+Beispiel:
+Rebus-Archiv, Rorschach-Archiv<br></blockquote>
+<blockquote><b>htb_build_hierarchy_top_down</b><br>
+Beispiel:
+UB-Nachlässe<br></blockquote>Die
+Idee war ferner, dass die resultierende Hierarchie-XML-Datei nur die
+minimale Strukturinformation enthält, und dass die bibliographischen
+Daten beim Formatieren der Endprodukte aus der MARC-XML Datei geholt
+werden. &nbsp;Bei grösseren Datenmengen ist dies nicht performant. Die
+folgenden Alternativen sind besser<br><blockquote><b>htb_build_hierarchy_bottom_up_full</b><br>Sorgt
+dafür, dass die benötigten bibliographischen Daten vollständig in der
+Hierarchie-Datei vorhanden sind (Zählung, Autor, Titel).<br>
+Beispiel: Gosteli Archiv<br></blockquote>
+<blockquote><b>enrich-hierarchy-with-marcdata.pl</b><br>Dieses Skript&nbsp;
+reichert die Hierarchie-XML-Datei nachträglich mit Daten aus einzelnen
+MARC-XML-Dateien an.<br>Dies ist sehr performant für grosse Datenmengen.<br>Beispiel: UB-Nachlässe&nbsp;<br></blockquote>
+[<a href="aaa_liesmi_htb_2010.html#top">top</a>]<br><hr size="2" width="100%"><h2><a name="a4"></a>4
+&nbsp;Link zurück in die Aleph-Session</h2>Die
+produzierten HTML-Seiten enthalten meist Links zurück in den Aleph
+Katalog. Wenn möglich sollte man dabei immer dieselbe Aleph-Session
+verwenden.&nbsp;State of the art ist, den Aleph-Session-Link in einem
+Cookies zu
+versorgen.<br>
+<br>Die vollständige Dokumentation findet sich in Babette:<br>
+<a href="http://www.ub.unibas.ch/babette/index.php/Links_in_eine_Session_des_Aleph_Webopacs">http://www.ub.unibas.ch/babette/index.php/Links_in_eine_Session_des_Aleph_Webopacs</a><br>
+<br><br>[<a href="aaa_liesmi_htb_2010.html#top">top</a>]<br><hr size="2" width="100%">Stand 6. August 2010 / andres.vonarx@unibas.ch<br><br>
+<br></body></html>

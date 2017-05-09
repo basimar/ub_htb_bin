@@ -1,0 +1,504 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>HierarchyToolbox - perl tools for handling hierarachies of bibliographic records</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:root@localhost" />
+</head>
+
+<body style="background-color: white">
+<table border="0" width="100%" cellspacing="0" cellpadding="3">
+<tr><td class="block" style="background-color: #cccccc" valign="middle">
+<big><strong><span class="block">&nbsp;HierarchyToolbox - perl tools for handling hierarachies of bibliographic records</span></strong></big>
+</td></tr>
+</table>
+
+
+<!-- INDEX BEGIN -->
+<div name="index">
+<p><a name="__index__"></a></p>
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#description">DESCRIPTION</a></li>
+	<ul>
+
+		<li><a href="#shell_scripts">Shell scripts</a></li>
+		<ul>
+
+			<li><a href="#retrieving_data_and_converting_files">Retrieving data and converting files</a></li>
+			<li><a href="#building_hierarchies">Building hierarchies</a></li>
+		</ul>
+
+		<li><a href="#perl_interface">Perl interface</a></li>
+		<ul>
+
+			<li><a href="#alephxtree__oo_interface_to_the_hierarchy_tree">alephxtree: OO interface to the hierarchy tree</a></li>
+		</ul>
+
+	</ul>
+
+	<li><a href="#author">AUTHOR</a></li>
+	<li><a href="#history">HISTORY</a></li>
+	<li><a href="#copyright_and_license">COPYRIGHT AND LICENSE</a></li>
+	<li><a href="#see_also">SEE ALSO</a></li>
+</ul>
+
+<hr name="index" />
+</div>
+<!-- INDEX END -->
+
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>HierarchyToolbox - perl tools for handling hierarachies of bibliographic records</p>
+<p>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<p>Don't use it. Use the shell scripts instead.</p>
+<p>
+</p>
+<hr />
+<h1><a name="description">DESCRIPTION</a></h1>
+<p>
+</p>
+<h2><a name="shell_scripts">Shell scripts</a></h2>
+<p>The following shell scripts provide a simple interface to the HierarchyToolbox:</p>
+<p>
+</p>
+<h3><a name="retrieving_data_and_converting_files">Retrieving data and converting files</a></h3>
+<dl>
+<dt><strong><a name="htb_alephseq_extract_490" class="item">htb_alephseq_extract_490</a></strong></dt>
+
+<dd>
+<p>Extract 490 fields from an Aleph sequential file.</p>
+<pre>
+ usage: htb_alephseq_extract_490  &lt;input_aleph.seq&gt; [&lt;output_490.txt&gt;]</pre>
+<p>A shell for <a href="#item_alephseq_extract_490">alephseq_extract_490</a>.</p>
+</dd>
+<dt><strong><a name="htb_alephseq_to_marcxml" class="item">htb_alephseq_to_marcxml</a></strong></dt>
+
+<dd>
+<p>Convert Aleph sequential to MARC21 XML.</p>
+<pre>
+ usage: htb_alephseq_to_marcxml  &lt;input_aleph.seq&gt; [&lt;output_marc.xml&gt;]</pre>
+<p>A shell for <a href="#item_convert_alephseq_to_marcxml">convert_alephseq_to_marcxml</a>.</p>
+</dd>
+<dt><strong><a name="htb_alephseq_numberlist_to_marcxml" class="item">htb_alephseq_numberlist_to_marcxml</a></strong></dt>
+
+<dd>
+<p>Reads (1) an Aleph sequential file and (2) a &quot;numberlist&quot;, i.e. a text file with
+Aleph system numbers. Converts all records listed in &quot;numberlist&quot; into one MARC21 XML file.</p>
+<pre>
+ usage:  htb_alephseq_numberlist_to_marcxml [options]</pre>
+<pre>
+ Reads (1) an Aleph sequential file and (2) a &quot;numberlist&quot;, i.e. a text
+ file with Aleph system numbers. Converts all records listed in &quot;numberlist&quot;
+ into MARC21 XML.</pre>
+<pre>
+ options:
+ --help                 show this text and quit
+ --version              show version information and quit
+ --alephseq=filename    Aleph sequential input file (mandatory)
+ --numberlist=filename  textfile with lines of Aleph system numbers (mandatory)
+ --output=filename      XML output file (default: stdout)</pre>
+<p>Another shell for <a href="#item_convert_alephseq_to_marcxml">convert_alephseq_to_marcxml</a>.</p>
+</dd>
+<dt><strong><a name="htb_alephseq_numberlist_to_multiple_marcxml" class="item">htb_alephseq_numberlist_to_multiple_marcxml</a></strong></dt>
+
+<dd>
+<p>Reads (1) an Aleph sequential file and (2) a &quot;numberlist&quot;, i.e. a text file with
+Aleph system numbers. Converts all records listed in &quot;numberlist&quot; into <strong>separate</strong>
+MARC21 XML files.</p>
+<pre>
+ usage:  htb_alephseq_numberlist_to_multiple_marcxml [options]</pre>
+<pre>
+ Reads an Aleph sequential file and a numberlist (a text file consisting
+ of one Aleph system number per line). Converts all records listed in
+ numberlist into single MARC21 XML files, named &quot;marc&lt;recno&gt;.xml&quot;.</pre>
+<pre>
+ options:
+ --help                 show this text and quit
+ --version              show version information and quit
+ --alephseq=filename    Aleph sequential input file (mandatory)
+ --numberlist=filename  textfile with lines of Aleph system numbers (mandatory)
+ --outputdir=directory  XML output file (mandatory)
+ --quiet                do not output any messages</pre>
+<p>A shell for <a href="#item_convert_alephseq_to_multiple_marcxml">convert_alephseq_to_multiple_marcxml</a></p>
+</dd>
+<dt><strong><a name="htb_alephx_store_set" class="item">htb_alephx_store_set</a></strong></dt>
+
+<dd>
+<p>Retrieve bibliographic records thru Aleph X-Services and store them into
+a file. The output format is non-standard XML. It can be converted into
+standard MARC21 XML using alephxml_marcxml.xsl.</p>
+<pre>
+ usage:  htb_alephx_store_set [options]</pre>
+<pre>
+ Retrieve bibliographic records thru Aleph X-Services and store them into
+ a file. The output format is non-standard XML. It can be converted into
+ standard MARC21 XML using alephxml_marcxml.xsl.</pre>
+<pre>
+ options:
+ --help               show this text and quit
+ --version            show version information and quit
+ --ccl=&quot;query&quot;        CCL query     (mandatory)
+ --file=filename      output file   (mandatory)
+ --host=hostname      Aleph server  (default: aleph.unibas.ch)
+ --alephlib=library   Aleph library (default: dsv01)
+ --quiet              do not output any messages</pre>
+<pre>
+ example:
+ $ htb_alephx_store_set --ccl='wrd=(zen internet) and wsl=A100' --file=out.xml
+ $ saxon out.xml alephxml_marcxml.xsl &gt; marc.xml</pre>
+<p>A shell for <a href="#item_alephx_store_set">alephx_store_set</a>.</p>
+</dd>
+</dl>
+<p>
+</p>
+<h3><a name="building_hierarchies">Building hierarchies</a></h3>
+<dl>
+<dt><strong><a name="htb_build_hierarchy_bottom_up" class="item">htb_build_hierarchy_bottom_up</a></strong></dt>
+
+<dd>
+<p>Suppose you have a set of bibliographic records in MARC XML or Aleph sequential format.
+All the set's records are either top level records (=records not linked to any other
+records) or child level records (=records containing an up-link to another record).
+The records are in no particular order.</p>
+<p>To produce an ordered XML hierarchy file representing the hierarchical structure
+of the records, you would (1) extract hierarchical information into a text file
+using <strong>marcxml_hierarchy.xsl</strong> (for MARC XML) or <a href="#item_alephseq_extract_490">alephseq_extract_490</a>
+(for Aleph sequential) and then (2) call the shell script <strong>htb_build_hierarchy_bottom_up</strong>.</p>
+<pre>
+ $ build_hierarchy_bottom_up  input.txt  output.xml</pre>
+<p>Sample input:</p>
+<pre>
+ recno   uplink  sortform   level_of_description
+ 46313   46311   1/2        file
+ 46312   46311   1/1        file</pre>
+<p>Sample output:</p>
+<pre>
+ &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+ &lt;tree number_of_records=&quot;2&quot; generated=&quot;Fri Dec 21 11:53:28 2007&quot;&gt;
+    &lt;rec level=&quot;1&quot; recno=&quot;000046311&quot;&gt;
+        &lt;rec level=&quot;2&quot; recno=&quot;000046312&quot;&gt;&lt;data&gt;&lt;level_of_description&gt;file&lt;/level_of_description&gt;&lt;/data&gt;
+        &lt;/rec&gt;
+        &lt;rec level=&quot;2&quot; recno=&quot;000046313&quot;&gt;&lt;data&gt;&lt;level_of_description&gt;file&lt;/level_of_description&gt;&lt;/data&gt;
+        &lt;/rec&gt;
+    &lt;/rec&gt;
+ &lt;/tree&gt;</pre>
+<table border="1" cellpadding="2" style="border-collapse:collapse;font-size:0.8em;margin-left:1cm;margin-bottom:5mm" width="400">
+<colgroup><col width="40"><col width="*"></colgroup>
+<tr><td>in</td><td>text TSV (recno, uplink sysno, sortform, level)</td></tr>
+<tr><td>out</td><td>Ordered hierarchy XML</td></tr>
+</table></dd>
+<dt><strong><a name="htb_build_hierarchy_top_down" class="item">htb_build_hierarchy_top_down</a></strong></dt>
+
+<dd>
+<p>Suppose you have a unordered set of bibliographic data composed of records which may
+or may not belong to a hierarchy. You also have a list of the top level
+records of the hierarchy which may or may not be in the bibliographic set.</p>
+<p>To produce a list of all the records which pertain to the hierarchy, you would (1) extract
+490 information into a text file using <strong>marcxml_hierarchy.xsl</strong> (for MARC XML) or
+<a href="#item_alephseq_extract_490">alephseq_extract_490</a> (for Aleph sequential) and then
+(2) call the shell script <strong>htb_build_hierarchy_top_down</strong>.</p>
+<pre>
+ $ htb_build_hierarchy_top_down --toplist='top.txt' --list490='all490.txt' --outfile='hierarchy.xml'</pre>
+<p>Sample input: toplist</p>
+<pre>
+ recno    sortform   data
+ 0001234  aa         some data
+ 0001235  bb         some more data</pre>
+<p>Sample input: list490</p>
+<pre>
+ recno   uplink  sortform
+ 3456    1234    aa.1
+ 3457    1234    aa.2
+ 3458    2345    cc.1
+ 3459    2345    cc.2
+ 3460    1235    bb.1
+ 3461    1236    bb.2</pre>
+<p>Sample output</p>
+<p>Same format as for <a href="#item_htb_build_hierarchy_bottom_up">htb_build_hierarchy_bottom_up</a>.</p>
+<table border="1" cellpadding="2" style="border-collapse:collapse;font-size:0.8em;margin-left:1cm;margin-bottom:5mm" width="400">
+<colgroup><col width="80"><col width="*"></colgroup>
+<tr><td>in (toplist)</td><td>text TSV (recno top level,sortform,data)</td></tr>
+<tr><td>in (list490)</td><td>text TSV (recno,uplink,sortform)</td></tr>
+<tr><td>out</td><td>text TSV (recno all, level)</td></tr>
+</table></dd>
+</dl>
+<p>
+</p>
+<h2><a name="perl_interface">Perl interface</a></h2>
+<dl>
+<dt><strong><a name="alephx_store_set" class="item">alephx_store_set (%args)</a></strong></dt>
+
+<dd>
+<p>Connects to an Aleph X-Server, retrieves bibliographic data using CCL, and stores the
+result in a valid XML file, in a format not entirely unlike Exlibris Ltd's &quot;OAI XML&quot; format.
+Returns undef for success, an error message for error.</p>
+<pre>
+ alephx_store_set(
+   ccl     =&gt; 'wsu=perl',
+   outfile =&gt; 'oai.xml',
+ );</pre>
+<p>The mandatory hash <strong>%arg</strong> takes the following keys:</p>
+<pre>
+ ccl         CCL search string                            mandatory
+ outfile     name of the file where results get stored    mandatory
+ host        hostname of Aleph Server                     default: aleph.unibas.ch
+ alephlib    Aleph BIB library                            default: dsv01
+ debug       if true, prints out X-Service requests       default: false</pre>
+<p><strong>Caveat</strong> In V16 or V18, the Aleph X-Service XML data may be buggy:
+(1) Data may contain illegal XML characters, e.g. an erroneously entered <code>Ctrl-A</code>
+in a MARC field indicator. The script will remove these characters.
+(2) When escaping an ampersand, the Aleph X-Service sometimes adds an extra space
+after <code>&amp;amp;</code>. If that matters, for instance in 856 URLs, you must correct that
+yourselves.</p>
+<p><strong>Hint</strong>: use <strong>alephxml_marcxml.xsl</strong> to convert the resulting XML file into
+MARC21 Slim XML.</p>
+<table border="1" cellpadding="2" style="border-collapse:collapse;font-size:0.8em;margin-left:1cm;margin-bottom:5mm" width="400">
+<colgroup><col width="40"><col width="*"></colgroup>
+<tr><td>in</td><td>CCL command</td></tr>
+<tr><td>out</td><td>Aleph OAI XML</td></tr>
+</table></dd>
+<dt><strong><a name="convert_alephseq_to_marcxml" class="item">convert_alephseq_to_marcxml (%args)</a></strong></dt>
+
+<dd>
+<p>Converts an Aleph 500 sequential file into a MARC21 Slim XML file.</p>
+<pre>
+ convert_alephseq_to_marcxml(
+   infile  =&gt; 'aleph.seq',
+   outfile =&gt; 'marc.xml',
+ );</pre>
+<p>The optional hash <strong>%args</strong> takes the following keys:</p>
+<pre>
+ infile     name of Aleph 500 sequential file    default: stdin
+ outfile    name of MARC 21 Slim XML file        default: stdout
+ orgcode    MARC 003 organization code           default: &quot;SzZuIDS BS/BE&quot;
+ rectype    MARC 21 Slim record type             default: &quot;Bibliographic&quot;
+ ignore     arrayref of field tags to ignore     default: ['CAT']
+ filter     coderef to a filter callback         default: a sub {} returning true
+ numberlist name of numberlist file              default: none
+ no_001     do not generate a 001 control field  default: false
+ no_003     do not generate a 003 field          default: false</pre>
+<p>The <strong>filter</strong> callback serves to select records during conversion and/or to
+manipulate input data. The callback function receives one Aleph sequential record
+at a time in the form of a reference to an ARRAY of record lines (see below).
+If the callback function returns true, the record will be converted to XML.
+Otherwise, it will be ignored.</p>
+<p>A <strong>numberlist</strong> is the name of a TSV text file consisting of record numbers in
+the first column. Only records present in the numberlist will be converted.</p>
+<table border="1" cellpadding="2" style="border-collapse:collapse;font-size:0.8em;margin-left:1cm;margin-bottom:5mm" width="400">
+<colgroup><col width="40"><col width="*"></colgroup>
+<tr><td>in</td><td>Aleph sequential</td></tr>
+<tr><td>out</td><td>MARC21 Slim XML</td></tr>
+</table></dd>
+<dt><strong><a name="convert_alephseq_to_multiple_marcxml" class="item">convert_alephseq_to_multiple_marcxml (%args)</a></strong></dt>
+
+<dd>
+<p>Converts an Aleph 500 sequential file into multiple MARC21 Slim XML files.</p>
+<pre>
+ convert_alephseq_to_marcxml(
+   infile  =&gt; 'aleph.seq',
+   outfile_format =&gt; 'mydir/marc%s.xml',
+ );</pre>
+<p>For every record, a MARC21 XML file will be genarated, using the <strong>outfile_format</strong>
+parameter to construct its filename. Other <strong>%args</strong> are the same as in
+<a href="#item_convert_alephseq_to_marcxml">convert_alephseq_to_marcxml</a>, notably the
+<strong>filter</strong> argument.</p>
+<table border="1" cellpadding="2" style="border-collapse:collapse;font-size:0.8em;margin-left:1cm;margin-bottom:5mm" width="400">
+<colgroup><col width="40"><col width="*"></colgroup>
+<tr><td>in</td><td>Aleph sequential</td></tr>
+<tr><td>out</td><td>multiple MARC21 Slim XML</td></tr>
+</table></dd>
+<dt><strong><a name="alephseq_record_to_xml" class="item">alephseq_record_to_xml ($recno, $content, $options)</a></strong></dt>
+
+<dd>
+<p>Converts one Aleph sequential record to MARC21 Slim XML. The <strong>content</strong> is
+an ARRAY reference to a list of single lines, with the leading record number removed:</p>
+<p>Example:</p>
+<pre>
+ $sysno = 4711;
+ $content = [
+    'FMT   L BK',
+    'LDR   L 00000ntm--2200000uu-4500',
+    '008   L 991131n--------xx-||||||-||||00||-|ger-d',
+    '245   L $$aNachlass 79: Gustav Teichmuller (1832-1888)',
+    '909   L $$ax2',
+    '830   L $$aTeichmuller, Gustav (1832-1888)',
+    '852   L $$aCH$$bBS UB$$cHandschriften$$dNL 79'
+ ];
+ alephseq_record_to_xml($sysno,$content);</pre>
+<p>This produces:</p>
+<pre>
+ &lt;record type=&quot;Bibliographic&quot;&gt;
+    &lt;leader&gt;00000ntm  2200000uu 4500&lt;/leader&gt;
+    &lt;controlfield tag=&quot;001&quot;&gt;4711&lt;/controlfield&gt;
+    &lt;controlfield tag=&quot;003&quot;&gt;SzZuIDS BS/BE&lt;/controlfield&gt;
+    &lt;controlfield tag=&quot;008&quot;&gt;991131n--------xx-||||||-||||00||-|ger-d&lt;/controlfield&gt;
+    &lt;datafield tag=&quot;245&quot; ind1=&quot; &quot; ind2=&quot; &quot;&gt;
+        &lt;subfield code=&quot;a&quot;&gt;Nachlass 79: Gustav Teichmuller (1832-1888)&lt;/subfield&gt;
+    &lt;/datafield&gt;
+    &lt;datafield tag=&quot;909&quot; ind1=&quot; &quot; ind2=&quot; &quot;&gt;
+        &lt;subfield code=&quot;a&quot;&gt;x2&lt;/subfield&gt;
+    &lt;/datafield&gt;
+    &lt;datafield tag=&quot;830&quot; ind1=&quot; &quot; ind2=&quot; &quot;&gt;
+        &lt;subfield code=&quot;a&quot;&gt;Teichmuller, Gustav (1832-1888)&lt;/subfield&gt;
+    &lt;/datafield&gt;
+    &lt;datafield tag=&quot;852&quot; ind1=&quot; &quot; ind2=&quot; &quot;&gt;
+        &lt;subfield code=&quot;a&quot;&gt;CH&lt;/subfield&gt;
+        &lt;subfield code=&quot;b&quot;&gt;BS UB&lt;/subfield&gt;
+        &lt;subfield code=&quot;c&quot;&gt;Handschriften&lt;/subfield&gt;
+        &lt;subfield code=&quot;d&quot;&gt;NL 79&lt;/subfield&gt;
+    &lt;/datafield&gt;
+    &lt;datafield tag=&quot;FMT&quot; ind1=&quot; &quot; ind2=&quot; &quot;&gt;
+        &lt;subfield code=&quot;a&quot;&gt;BK&lt;/subfield&gt;
+    &lt;/datafield&gt;
+ &lt;/record&gt;</pre>
+<p>The optional hash <strong>%args</strong> takes the same keys as <a href="#item_convert_alephseq_to_marcxml">convert_alephseq_to_marcxml</a>.</p>
+<p>CAUTION: All field indicator A-Z will be converted to lower case. All field indicators other than a-z and 0-9
+will be silently converted to blanks. - All subfield codes other than letters a-z, A-Z and digits 0-9 will be replaced by a '?' and the content of the subfield code will be prepended to the subfield content.</p>
+<table border="1" cellpadding="2" style="border-collapse:collapse;font-size:0.8em;margin-left:1cm;margin-bottom:5mm" width="400">
+<colgroup><col width="40"><col width="*"></colgroup>
+<tr><td>in</td><td>fragments of Aleph sequential</td></tr>
+<tr><td>out</td><td>fragment of MARC21 Slim XML</td></tr>
+</table></dd>
+<dt><strong><a name="alephseq_extract_490" class="item">alephseq_extract_490 (%args)</a></strong></dt>
+
+<dd>
+<p>Extracts hierarchy information from an Aleph sequential file and prints it out in an unsorted
+TSV text file. For all records having a 490 field, it prints out the system number of
+the uplink (490 $w), the system number of the current record, and the sortform (490 $i).</p>
+<pre>
+ alephseq_extract_490(
+   infile =&gt; 'aleph.seq',
+   outfile =&gt; '490.txt',
+ );</pre>
+<p>Sample output:</p>
+<pre>
+ recno           sysno           sortform
+ 000046313       000046311       1/2
+ 000046312       000046311       1/1</pre>
+<p>The optional hash <strong>%args</strong> takes the following keys:</p>
+<pre>
+ infile     name of Aleph 500 sequential file   default: stdin
+ outfile    name of the text output file        default: stdout</pre>
+<p><strong>Note:</strong> Much more elaborate information can be obtained using <strong>marcxml_hierarchy.xsl</strong>.</p>
+<table border="1" cellpadding="2" style="border-collapse:collapse;font-size:0.8em;margin-left:1cm;margin-bottom:5mm" width="400">
+<colgroup><col width="40"><col width="*"></colgroup>
+<tr><td>in</td><td>Aleph sequential</td></tr>
+<tr><td>out</td><td>Text TSV (sysno, uplink_sysno, sortform)</td></tr>
+</table></dd>
+</dl>
+<p>
+</p>
+<h3><a name="alephxtree__oo_interface_to_the_hierarchy_tree">alephxtree: OO interface to the hierarchy tree</a></h3>
+<dl>
+<dt><strong><a name="overview" class="item">Overview</a></strong></dt>
+
+<dd>
+<p>With this mechanism, you can collect some fragments of MARC data which contain
+linking information (IDS MARC 490 $w). The fragments can be added in any order;
+they will be ordered and hierarchized during serialization.</p>
+<pre>
+  use HierarchyToolbox;
+  my $Tree = alephxtree-&gt;new (
+    outfile =&gt; 'out.xml
+  );
+  while (...) {
+    $Tree-&gt;add($recno,$uplink,$sort,$data);
+  }
+  $Tree-&gt;serialize;</pre>
+</dd>
+<dt><strong><a name="new" class="item">alephxtree::new (%args)</a></strong></dt>
+
+<dd>
+<p>Creates a tree object. The optional hash <strong>%args</strong> takes the following keys:</p>
+<pre>
+ outfile   output for serialize()    default: stdout</pre>
+</dd>
+<dt><strong><a name="add" class="item">alephxtree::add ($recno,$uplink,$sort,$data)</a></strong></dt>
+
+<dd>
+<p>Adds a node to the hierarchy tree. <strong>recno</strong> is the Aleph record number of the
+current item. <strong>uplink</strong> is the Aleph record number of the parent of this node,
+or zero, if it is a top node. <strong>sort</strong> is some data used for sorting nodes on
+the same level.</p>
+<p>If <strong>data</strong> is present, it will be output in a &lt;data&gt; element. It may
+contain an XML text node or XML elements, but it is your responsability to
+provide correct XML code.</p>
+</dd>
+<dt><strong><a name="alephxtree_serialize" class="item">alephxtree::serialize</a></strong></dt>
+
+<dd>
+<p>Prints the sorted hierarchy tree in XML format to the <em>outfile</em> which has
+been defined when constructing the tree object or <em>stdout</em>.</p>
+<pre>
+  $Tree-&gt;serialize;</pre>
+<p>Example output, (assuming that the ISAD-G 'level_of_description' is used as
+<strong>data</strong> parameter when adding nodes to the tree):</p>
+<pre>
+ &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+ &lt;tree number_of_records=&quot;201&quot; generated=&quot;Fri Apr 21 14:24:24 2006&quot;&gt;
+  &lt;rec level=&quot;1&quot; recno=&quot;000048713&quot;&gt;
+   &lt;data&gt;Fonds&lt;/data&gt;
+   &lt;rec level=&quot;2&quot; recno=&quot;000049180&quot;&gt;
+    &lt;data&gt;Series&lt;/data&gt;
+    &lt;rec level=&quot;3&quot; recno=&quot;000049182&quot;&gt;
+     &lt;data&gt;File&lt;/data&gt;
+    &lt;/rec&gt;
+    &lt;rec level=&quot;3&quot; recno=&quot;000049309&quot;&gt;
+     &lt;data&gt;File&lt;/data&gt;
+    &lt;/rec&gt;
+   &lt;/rec&gt;
+  &lt;/rec&gt;
+ &lt;/tree&gt;</pre>
+</dd>
+<dt><strong><a name="alephxtree_debug" class="item">alephxtree::debug</a></strong></dt>
+
+<dd>
+<p>Prints out some internals of the Tree</p>
+<pre>
+  $Tree-&gt;debug;</pre>
+</dd>
+</dl>
+<p>
+</p>
+<hr />
+<h1><a name="author">AUTHOR</a></h1>
+<p><a href="mailto:andres.vonarx@unibas.ch">andres.vonarx@unibas.ch</a></p>
+<p>
+</p>
+<hr />
+<h1><a name="history">HISTORY</a></h1>
+<pre>
+  0.01  21.04.2006 - experimental
+  1.00  31.12.2007 - even more experimental
+  2.02  06.04.2009 - still experimental
+  2.03  08.03.2012 - alephx_store_set: open output with ':utf8' property</pre>
+<p>
+</p>
+<hr />
+<h1><a name="copyright_and_license">COPYRIGHT AND LICENSE</a></h1>
+<p>Copyright (C) 2006-2012 by Basel University Library, Switzerland.</p>
+<p>This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.</p>
+<p>
+</p>
+<hr />
+<h1><a name="see_also">SEE ALSO</a></h1>
+<p><code>perl(1)</code>.</p>
+<table border="0" width="100%" cellspacing="0" cellpadding="3">
+<tr><td class="block" style="background-color: #cccccc" valign="middle">
+<big><strong><span class="block">&nbsp;HierarchyToolbox - perl tools for handling hierarachies of bibliographic records</span></strong></big>
+</td></tr>
+</table>
+
+</body>
+
+</html>

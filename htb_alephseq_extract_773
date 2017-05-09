@@ -1,0 +1,38 @@
+#!/usr/bin/perl
+use strict;
+use FindBin;
+use lib $FindBin::Bin;
+use HierarchyToolbox;
+
+my $infile  = shift @ARGV or die "usage: $0 <input_aleph.seq> [<output_773.txt>]\n";
+my $outfile = shift @ARGV || '-';
+
+local($_,*IN,*OUT);
+
+open(IN,"<$infile") or die "cannot read $infile: $!";
+open(OUT,">$outfile") or die "cannot write $outfile: $!";
+
+print OUT "recno\tuplink\tsortform\n";
+    while ( <IN> ) {
+        if ( s/^(\d+) 773 A L // ) {
+            chomp;
+            my $tmp;
+            $tmp->{sysno} = $1;
+            my @tmp = split /\$\$/;
+            while ( @tmp ) {
+                $_=shift @tmp;
+                s/^(.)//;
+                my $sub = $1;
+                if ( $sub eq 'w' ) {
+                    $tmp->{uplink} = sprintf($ALEPH_RECNO_FORMAT,$_);
+                }
+                elsif ( $sub eq 'j' ) {
+                    $tmp->{sortform} = $_;
+                }
+            }
+            if ( defined $tmp->{uplink} ) {
+                print OUT $tmp->{sysno}, "\t", $tmp->{uplink}, "\t", $tmp->{sortform}, "\n";
+            }
+        }
+    }
+close OUT;

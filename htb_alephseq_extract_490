@@ -1,0 +1,9 @@
+#!/usr/bin/perl
+use strict;
+use FindBin;
+use lib $FindBin::Bin;
+use HierarchyToolbox;
+
+my $infile  = shift @ARGV or die "usage: $0 <input_aleph.seq> [<output_490.txt>]\n";
+my $outfile = shift @ARGV || '-';
+alephseq_extract_490( infile => $infile, outfile => $outfile );

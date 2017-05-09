@@ -1,0 +1,58 @@
+#!/usr/bin/perl
+use strict;
+use FindBin;
+use lib $FindBin::Bin;
+use HierarchyToolbox;
+use Getopt::Long;
+use File::Basename;
+
+sub usage {
+    my $PROG=File::Basename::basename($0);
+    print STDERR<<EOD;
+$PROG - 31.12.2007 (c) andres.vonarx\@unibas.ch
+
+usage:  $PROG [options]
+
+Retrieve bibliographic records thru Aleph X-Services and store them into
+a file. The output format is non-standard XML. It can be converted into
+standard MARC21 XML using alephxml_marcxml.xsl.
+
+options:
+ --help               show this text and quit
+ --version            show version information and quit
+ --ccl="query"        CCL query     (mandatory)
+ --file=filename      output file   (mandatory)
+ --host=hostname      Aleph server  (default: aleph.unibas.ch)
+ --alephlib=library   Aleph library (default: dsv01)
+ --quiet              do not output any messages
+
+example:
+ \$ $PROG --ccl='wrd=(zen internet) and wsl=A100' --file=out.xml
+ \$ saxon out.xml alephxml_marcxml.xsl > marc.xml
+
+EOD
+    exit;
+}
+
+my $opt;
+GetOptions(
+    'help'      => \$opt->{help},
+    'version'   => \$opt->{help},
+    'ccl=s'     => \$opt->{ccl},
+    'file=s'    => \$opt->{file},
+    'host=s'    => \$opt->{host},
+    'alephlib=s'=> \$opt->{alephlib},
+    'quiet'     => \$opt->{quiet},
+    ) or usage;
+
+($opt->{help}) and usage;
+($opt->{ccl})  or usage;
+($opt->{file}) or usage;
+
+alephx_store_set(
+    ccl         => $opt->{ccl},
+    outfile     => $opt->{file},
+    alephlib    => $opt->{alephlib},
+    host        => $opt->{host},
+    debug       => ($opt->{quiet} ? 0 : 1),
+);
