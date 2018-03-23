@@ -14,7 +14,7 @@ open(OUT,">$outfile") or die "cannot write $outfile: $!";
 
 print OUT "recno\tuplink\tsortform\n";
     while ( <IN> ) {
-        if ( s/^(\d+) 773 A L // ) {
+        if ( s/^(\d+) 7731A L // ) {
             chomp;
             my $tmp;
             $tmp->{sysno} = $1;
